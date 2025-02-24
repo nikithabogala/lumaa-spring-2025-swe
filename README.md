@@ -1,119 +1,166 @@
-# Full-Stack Coding Challenge
+# Task Management Application
 
-**Deadline**: Sunday, Feb 23th 11:59 pm PST
+This is a Task Management application built with:
+- **React + TypeScript** (frontend)
+- **Node.js + TypeScript** (backend)
+- **PostgreSQL** (database)
 
----
-
-## Overview
-
-Create a “Task Management” application with **React + TypeScript** (frontend), **Node.js** (or **Nest.js**) (backend), and **PostgreSQL** (database). The application should:
-
-1. **Register** (sign up) and **Log in** (sign in) users.
-2. After logging in, allow users to:
-   - **View a list of tasks**.
-   - **Create a new task**.
-   - **Update an existing task** (e.g., mark complete, edit).
-   - **Delete a task**.
-
-Focus on **correctness**, **functionality**, and **code clarity** rather than visual design.  
-This challenge is intended to be completed within ~3 hours, so keep solutions minimal yet functional.
+Users can register, log in, and manage their tasks (create, view, update, delete) in a secure manner using JWT authentication.
 
 ---
 
-## Requirements
+## Demo
 
-### 1. Authentication
+Link to the demo: 
 
-- **User Model**:
-  - `id`: Primary key
-  - `username`: Unique string
-  - `password`: Hashed string
-- **Endpoints**:
-  - `POST /auth/register` – Create a new user
-  - `POST /auth/login` – Login user, return a token (e.g., JWT)
-- **Secure the Tasks Routes**: Only authenticated users can perform task operations.  
-  - **Password Hashing**: Use `bcrypt` or another hashing library to store passwords securely.
-  - **Token Verification**: Verify the token (JWT) on each request to protected routes.
-
-### 2. Backend (Node.js or Nest.js)
-
-- **Tasks CRUD**:  
-  - `GET /tasks` – Retrieve a list of tasks (optionally filtered by user).  
-  - `POST /tasks` – Create a new task.  
-  - `PUT /tasks/:id` – Update a task (e.g., mark as complete, edit text).  
-  - `DELETE /tasks/:id` – Delete a task.
-- **Task Model**:
-  - `id`: Primary key
-  - `title`: string
-  - `description`: string (optional)
-  - `isComplete`: boolean (default `false`)
-  - _(Optional)_ `userId` to link tasks to the user who created them
-- **Database**: PostgreSQL
-  - Provide instructions/migrations to set up:
-    - `users` table (with hashed passwords)
-    - `tasks` table
-- **Setup**:
-  - `npm install` to install dependencies
-  - `npm run start` (or `npm run dev`) to run the server
-  - Document any environment variables (e.g., database connection string, JWT secret)
-
-### 3. Frontend (React + TypeScript)
-
-- **Login / Register**:
-  - Simple forms for **Register** and **Login**.
-  - Store JWT (e.g., in `localStorage`) upon successful login.
-  - If not authenticated, the user should not see the tasks page.
-- **Tasks Page**:
-  - Fetch tasks from `GET /tasks` (including auth token in headers).
-  - Display the list of tasks.
-  - Form to create a new task (`POST /tasks`).
-  - Buttons/fields to update a task (`PUT /tasks/:id`).
-  - Button to delete a task (`DELETE /tasks/:id`).
-- **Navigation**:
-  - Show `Login`/`Register` if not authenticated.
-  - Show `Logout` if authenticated.
-- **Setup**:
-  - `npm install` then `npm start` (or `npm run dev`) to run.
-  - Document how to point the frontend at the backend (e.g., `.env` file, base URL).
+https://drive.google.com/file/d/1_fCJLLGdWMrz8zirReKqzs5hh06_2zUn/view?usp=sharing
 
 ---
 
-## Deliverables
+## Features
 
-1. **Fork the Public Repository**: **Fork** this repo into your own GitHub account.
-2. **Implement Your Solution** in the forked repository. Make sure you're README file has:
-   - Steps to set up the database (migrations, environment variables).
-   - How to run the backend.
-   - How to run the frontend.
-   - Any relevant notes on testing.
-   - Salary Expectations per month (Mandatory)
-3. **Short Video Demo**: Provide a link (in a `.md` file in your forked repo) to a brief screen recording showing:
-   - Registering a user
-   - Logging in
-   - Creating, updating, and deleting tasks
-4. **Deadline**: Submissions are due **Sunday, Feb 23th 11:59 pm PST**.
+1. **User Authentication**  
+   - Register a new user with a unique username and hashed password (bcrypt).
+   - Login to receive a JSON Web Token (JWT).
+   - Protected routes: Only authenticated users (with valid JWT) can manage tasks.
 
-> **Note**: Please keep your solution minimal. The entire project is intended to be completed in around 3 hours. Focus on core features (registration, login, tasks CRUD) rather than polished UI or extra features.
+2. **Task Management**  
+   - Create tasks with title and optional description.
+   - View tasks belonging to the logged-in user.
+   - Update tasks (mark complete/incomplete, edit text).
+   - Delete tasks.
+
+3. **Frontend Navigation**  
+   - Shows Login/Register links if unauthenticated.
+   - Shows Tasks/Logout if authenticated.
+   - Logout button clears JWT and redirects to Login.
 
 ---
 
-## Evaluation Criteria
+## Prerequisites
 
-1. **Functionality**  
-   - Does registration and login work correctly (with password hashing)?
-   - Are tasks protected by authentication?
-   - Does the tasks CRUD flow work end-to-end?
+- **Node.js** (v14+ recommended)
+- **npm** (included with Node.js)
+- **PostgreSQL** (Installed and running on your machine)
 
-2. **Code Quality**  
-   - Is the code structured logically and typed in TypeScript?
-   - Are variable/function names descriptive?
+---
 
-3. **Clarity**  
-   - Is the `README.md` (in your fork) clear and detailed about setup steps?
-   - Easy to run and test?
+## 1. Database Setup
 
-4. **Maintainability**  
-   - Organized logic (controllers/services, etc.)
-   - Minimal hard-coded values
+### 1.1. Create Database
 
-Good luck, and we look forward to your submission!
+In PostgreSQL (using pgAdmin or psql), create a new database 
+```sql
+CREATE DATABASE task_db;
+```
+
+### 1.2. Create Tables
+
+Within the task_db, run these SQL commands to create the necessary tables:
+
+```sql
+-- Users table
+CREATE TABLE users (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL
+);
+
+-- Tasks table
+CREATE TABLE tasks (
+  id SERIAL PRIMARY KEY,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  "isComplete" BOOLEAN DEFAULT false,
+  "userId" INTEGER REFERENCES users(id) ON DELETE CASCADE
+);
+```
+
+---
+
+## 2. Backend Setup
+
+1. Navigate to backend folder 
+  ```bash
+  cd Tash_Manager/backend
+  ```
+2. Install dependencies
+  ```bash
+  npm install
+  ```
+3. Create a .env file in the backend folder
+```bash
+DATABASE_URL=postgresql://<DB_USER>:<DB_PASSWORD>@localhost:5432/task_db
+JWT_SECRET=your_jwt_secret_key
+PORT=5001
+```
+4. Test the database cpnnection
+```bash
+npx ts-node rc/testDBConnection.ts
+```
+5. Run the development server
+```bash
+npm run dev
+```
+
+---
+
+## 3. Frontend setup
+
+
+1. Navigate to the frontend folder in a new terminal
+```bash
+cd Task_Manager/frontend
+```
+2. Install dependencies
+```bash
+npm install
+```
+3. Configure backend URL
+```bash
+REACT_APP_API_URL=http://localhost:5001
+```
+4. Run the development server
+```bash
+npm start
+```
+
+---
+## 4. Testing Application
+
+### 4.1 Registration and Login
+
+- **Register** a user at http://localhost:3000/register.
+  - Provide a unique username and a password.
+- **Login** at http://localhost:3000/login.
+  - If successful, the JWT is stored in **localStorage**, and you’re redirected to the tasks page.
+
+### 4.2 Task Operations
+
+1. Create a Task
+  - On the tasks page, fill out the form (title/description) and click “Add Task”.
+2. View Tasks
+  - Your tasks appear in a list below the form.
+3. Update a Task
+  - Click “Mark Complete” / “Mark Incomplete” to toggle completion.
+  - Click “Edit” to modify the title or description, then click “Save”.
+4. Delete a Task
+  - Click “Delete” to remove a task.
+5. Logout
+  - Click the “Logout” button in the navigation to clear your token and return to the login page.
+
+
+## Final checks
+
+- Make sure **PostgreSQL** is running and the tables are created.
+- npm run dev **(backend)** on port **5001**.
+- npm start **(frontend)** on port **3000**.
+- **Register**, **Login**, and **manage** tasks.
+
+
+## Salary Expectations
+
+- Monthly around **4000$-6000$** ( negotiable ).
+
+
+
